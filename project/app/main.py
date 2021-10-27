@@ -1,7 +1,8 @@
 import logging
 import os
 from fastapi import FastAPI
-from project.app.db import init_db
+from app.db import init_db
+from app.api import ping, summaries
 from tortoise.contrib.fastapi import register_tortoise
 from app.api import ping
 
@@ -18,6 +19,7 @@ def create_application() -> FastAPI:
 )
 
     application.include_router(ping.router)
+    application.include_router(summaries.router,prefix="/summaries", tags=["summaries"]) # new
     
     return application
 
