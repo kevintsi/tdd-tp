@@ -16,11 +16,7 @@ jobs:
        - name: Pull image
          run: docker pull ${{ env.IMAGE }}:latest || true
        - name: Build image
-         run: docker build \
-               --cache-from ${{ env.IMAGE }}:latest \
-               --tag ${{ env.IMAGE }}:latest \
-               --file ./project/Dockerfile.prod \
-               "./project"
+         run: docker build --cache-from ${{ env.IMAGE }}:latest --tag ${{ env.IMAGE }}:latest --file ./project/Dockerfile.prod "./project"
        - name: Push image
          run: docker push ${{ env.IMAGE }}:latest
    test:
@@ -37,27 +33,14 @@ jobs:
       - name: Pull image
         run: docker pull ${{ env.IMAGE }}:latest || true
       - name: Build image
-        run: docker build \
-             --cache-from ${{ env.IMAGE }}:latest \
-             --tag ${{ env.IMAGE }}:latest \
-             --file ./project/Dockerfile.prod \
-             "./project"
+        run: docker build --cache-from ${{ env.IMAGE }}:latest --tag ${{ env.IMAGE }}:latest --file ./project/Dockerfile.prod "./project"
       - name: Run container
-        run: docker run \
-             -d \
-             --name fastapi-tdd \
-             -e PORT=8765 \
-             -e ENVIRONMENT=dev \
-             -e DATABASE_TEST_URL=sqlite://sqlite.db \
-             -p 5003:8765 \
-             ${{ env.IMAGE }}:latest
+        run: docker run -d --name fastapi-tdd -e PORT=8765 -e ENVIRONMENT=dev -e DATABASE_TEST_URL=sqlite://sqlite.db -p 5003:8765 ${{ env.IMAGE }}:latest
       - name: Pytest
         run: docker exec fastapi-tdd python -m pytest .
       - name: Flake8
         run: docker exec fastapi-tdd python -m flake8 .
       - name: Black
-        run: docker exec fastapi-tdd python -m black . 
-             --check
+        run: docker exec fastapi-tdd python -m black . --check
       - name: isort
-        run: docker exec fastapi-tdd python -m isort . 
-            --check-only
+        run: docker exec fastapi-tdd python -m isort . --check-only
